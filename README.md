@@ -92,3 +92,47 @@ ignite chain serve
 ignite app install -g github.com/ignite/apps/wasm
 ignite wasm add
 ```
+
+# Smart contracts
+```
+cargo generate --git https://github.com/CosmWasm/cw-template.git --name test
+
+cargo wasm
+```
+
+## Compile
+```
+docker run --rm -v "$(pwd)":/code \
+  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/target \
+  --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+  cosmwasm/optimizer:0.16.0
+```
+
+## Upload
+```
+export BINARY=/Users/ivan/go/bin/exampled
+export CHAIN_ID=example
+
+export PATH_TO_WASM_FILE="../todo-contract/artifacts/todo_contract.wasm"
+export SIGNER=cosmos103etqwf8uuyvg0cw76auahh95seufg950xh95w
+
+$BINARY tx wasm store $PATH_TO_WASM_FILE \
+    --from $SIGNER \
+    --chain-id $CHAIN_ID
+
+$BINARY q tx [hash]
+```
+
+## Create contract with addr
+```
+export CODE_ID=1
+export INIT_MSG='{"owner":"cosmos103etqwf8uuyvg0cw76auahh95seufg950xh95w"}'
+export SALT="616c696365"
+
+$BINARY tx wasm instantiate2 $CODE_ID $INIT_MSG $SALT \
+    --from $SIGNER \
+    --chain-id $CHAIN_ID \
+    --label list \
+    --no-admin
+
+$BINARY query wasm list-code
