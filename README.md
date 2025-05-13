@@ -113,8 +113,8 @@ docker run --rm -v "$(pwd)":/code \
 export BINARY=/Users/ivan/go/bin/exampled
 export CHAIN_ID=example
 
-export PATH_TO_WASM_FILE="../todo-contract/artifacts/todo_contract.wasm"
-export SIGNER=cosmos103etqwf8uuyvg0cw76auahh95seufg950xh95w
+export PATH_TO_WASM_FILE="./todo-contract/artifacts/todo_contract.wasm"
+export SIGNER=cosmos1tcjf4jp6la0rzhlghchwmm463s6m9jgzc2y904
 
 $BINARY tx wasm store $PATH_TO_WASM_FILE \
     --from $SIGNER \
