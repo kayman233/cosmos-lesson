@@ -83,56 +83,46 @@ curl https://get.ignite.com/cli! | bash
 
 ## Creating a chain
 ```
-ignite scaffold chain example && cd example
-ignite chain serve
+ignite scaffold chain wasmapp --no-module
 ```
 
 ## Adding Wasm
 ```
 ignite app install -g github.com/ignite/apps/wasm
 ignite wasm add
+ignite chain serve
+ignite wasm config
+ignite chain serve
 ```
 
-# Smart contracts
+## Compile contracts
 ```
-cargo generate --git https://github.com/CosmWasm/cw-template.git --name test
+git clone https://github.com/CosmWasm/cw-plus.git                                                                   
+cd cw-plus
 
-cargo wasm
-```
-
-## Compile
-```
-docker run --rm -v "$(pwd)":/code \
-  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/target \
+docker run --rm -v "$(pwd)":/code \  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/optimizer:0.16.0
+  cosmwasm/workspace-optimizer:0.13.0
+
 ```
 
-## Upload
+## Upload contract
 ```
-export BINARY=/Users/ivan/go/bin/exampled
-export CHAIN_ID=example
+wasmappd tx wasm store artifacts/cw20_base.wasm --from alice --chain-id wasmapp --gas 3000000
 
-export PATH_TO_WASM_FILE="./todo-contract/artifacts/todo_contract.wasm"
-export SIGNER=cosmos1tcjf4jp6la0rzhlghchwmm463s6m9jgzc2y904
-
-$BINARY tx wasm store $PATH_TO_WASM_FILE \
-    --from $SIGNER \
-    --chain-id $CHAIN_ID
-
-$BINARY q tx [hash]
+wasmappd query tx
 ```
 
-## Create contract with addr
+## Instantiate contract and get address
 ```
-export CODE_ID=1
-export INIT_MSG='{"owner":"cosmos103etqwf8uuyvg0cw76auahh95seufg950xh95w"}'
-export SALT="616c696365"
+wasmappd tx wasm instantiate 2 '{"name":"umipt", "symbol":"MIPT", "decimals":6, "initial_balances":[{"address":"cosmos19fzrytkckch9c8au49cllkpr64k5upj2zy0yyw", "amount":"1000000000000"}]}' --label "umipt" --from alice --chain-id wasmapp --no-admin -y
 
-$BINARY tx wasm instantiate2 $CODE_ID $INIT_MSG $SALT \
-    --from $SIGNER \
-    --chain-id $CHAIN_ID \
-    --label list \
-    --no-admin
+wasmappd query wasm list-contract-by-code 2
+```
 
-$BINARY query wasm list-code
+## Transfer
+```
+wasmappd tx wasm execute $addr '{"transfer":{"recipient":"$bob","amount":"10000"}}' --from alice --chain-id wasmapp -y
+
+wasmappd q wasm contract-state smart $addr '{ "balance": { "address": "$bob" } }'
+```
