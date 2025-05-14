@@ -1,4 +1,4 @@
-# Cosmos blockchain (Go 1.23)
+# Cosmos blockchain ([Go 1.23.9](https://go.dev/dl/))
 
 ## Clone
 ```
