@@ -90,6 +90,7 @@ ignite scaffold chain wasmapp --no-module
 
 ## Adding Wasm
 ```
+cd wasmapp
 ignite app install -g github.com/ignite/apps/wasm
 ignite wasm add
 ignite chain serve
@@ -99,32 +100,42 @@ ignite chain serve
 
 ## Compile contracts
 ```
-git clone https://github.com/CosmWasm/cw-plus.git                                                                   
+git clone https://github.com/CosmWasm/cw-plus.git
 cd cw-plus
 
-docker run --rm -v "$(pwd)":/code \  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/target \
+docker run --rm -v "$(pwd)":/code \
+  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
   cosmwasm/workspace-optimizer:0.13.0
 
+cd ..
+cp -r ./cw-plus/artifacts ./wasmapp/artifacts1
 ```
 
 ## Upload contract
 ```
-wasmappd tx wasm store artifacts/cw20_base.wasm --from alice --chain-id wasmapp --gas 3000000
+wasmappd tx wasm store ./wasmapp/artifacts/cw20_base.wasm --from alice --chain-id wasmapp --gas 3000000
 
-wasmappd query tx
+wasmappd query tx [hash]
+
+wasmappd query wasm list-code
 ```
 
 ## Instantiate contract and get address
 ```
-wasmappd tx wasm instantiate 2 '{"name":"umipt", "symbol":"MIPT", "decimals":6, "initial_balances":[{"address":"cosmos19fzrytkckch9c8au49cllkpr64k5upj2zy0yyw", "amount":"1000000000000"}]}' --label "umipt" --from alice --chain-id wasmapp --no-admin -y
+wasmappd tx wasm instantiate [code] '{"name":"umipt", "symbol":"MIPT", "decimals":6, "initial_balances":[{"address":"[alice]", "amount":"1000000000000"}]}' --label "umipt" --from alice --chain-id wasmapp --no-admin -y
 
-wasmappd query wasm list-contract-by-code 2
+wasmappd query wasm list-contract-by-code [code]
 ```
 
 ## Transfer
 ```
-wasmappd tx wasm execute $addr '{"transfer":{"recipient":"$bob","amount":"10000"}}' --from alice --chain-id wasmapp -y
+wasmappd tx wasm execute [addr] '{"transfer":{"recipient":"[bob]","amount":"10000"}}' --from alice --chain-id wasmapp -y
 
-wasmappd q wasm contract-state smart $addr '{ "balance": { "address": "$bob" } }'
+wasmappd q wasm contract-state smart [addr] '{ "balance": { "address": "[bob]" } }'
+```
+
+## Alternative
+```
+wasmappd q wasm contract-state all [addr]
 ```
