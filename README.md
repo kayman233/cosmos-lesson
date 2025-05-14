@@ -2,6 +2,7 @@
 
 ## Clone
 ```
+mkdir lesson && cd lesson
 git clone https://github.com/cosmos/cosmos-sdk.git
 cd cosmos-sdk
 ```
@@ -52,6 +53,7 @@ $BINARY start
 
 # Send tokens via CLI
 ```
+cd lesson/cosmos-sdk/build
 export BINARY=./simd
 export CHAIN_ID=chain
 
