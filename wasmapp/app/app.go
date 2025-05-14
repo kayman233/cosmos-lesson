@@ -77,6 +77,8 @@ import (
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"wasmapp/docs"
 )
 
@@ -139,6 +141,10 @@ type App struct {
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
 	ScopedKeepers             map[string]capabilitykeeper.ScopedKeeper
+
+	// CosmWasm
+	WasmKeeper       wasmkeeper.Keeper
+	ScopedWasmKeeper capabilitykeeper.ScopedKeeper
 
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
@@ -289,6 +295,9 @@ func New(
 
 	if err := app.Load(loadLatest); err != nil {
 		return nil, err
+	}
+	if err := app.WasmKeeper.InitializePinnedCodes(app.NewUncachedContext(true, tmproto.Header{})); err != nil {
+		panic(err)
 	}
 
 	return app, nil
