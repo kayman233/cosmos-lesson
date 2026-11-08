@@ -1,0 +1,13 @@
+{
+  "name": "cosmos-lesson-client",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "cw20": "node cw20.mjs"
+  },
+  "dependencies": {
+    "@cosmjs/cosmwasm": "0.39.0",
+    "@cosmjs/proto-signing": "0.39.0",
+    "@cosmjs/stargate": "0.39.0"
+  }
+}

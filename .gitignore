@@ -1,0 +1,4 @@
+node_modules/
+.DS_Store
+# Local clone used during the lesson
+/cosmos-sdk/
